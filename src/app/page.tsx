@@ -1,69 +1,469 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import {
+  ShieldCheck,
+  Lock,
+  Package,
+  CheckCircle2,
+  Bot,
+  ArrowRight,
+  TrendingUp,
+  Sparkles,
+  Scale,
+  Zap,
+  Users,
+  Building2,
+  FileCheck2,
+  Smartphone,
+  ChevronRight,
+  Award,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/lib/auth-context";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
+
+export default function LandingPage() {
+  const router = useRouter();
+  const { isAuthenticated, user } = useAuth();
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="min-h-screen bg-background text-foreground flex flex-col selection:bg-emerald-500/20 selection:text-emerald-800">
+      {/* ── Top Header Bar ─────────────────────────────────────────── */}
+      <header className="sticky top-0 z-50 w-full border-b border-border/80 bg-background/90 backdrop-blur-md">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
+          <Link href="/" className="flex items-center gap-2.5">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white shadow-sm ring-1 ring-emerald-500/30">
+              <ShieldCheck className="size-5" />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-base font-bold tracking-tight leading-none flex items-center gap-1.5">
+                TIJORI
+                <span className="rounded bg-emerald-100 dark:bg-emerald-950/60 px-1 py-0.2 text-[0.62rem] font-semibold text-emerald-800 dark:text-emerald-300 tracking-wider">
+                  ESCROW
+                </span>
+              </span>
+              <span className="text-[0.65rem] text-muted-foreground font-medium tracking-wide">
+                UPI Protection Network
+              </span>
+            </div>
+          </Link>
+
+          <nav className="hidden md:flex items-center gap-6 text-xs font-semibold text-muted-foreground">
+            <a href="#how-it-works" className="hover:text-foreground transition-colors">
+              How It Works
+            </a>
+            <a href="#panchayat-ai" className="hover:text-foreground transition-colors">
+              Panchayat AI
+            </a>
+            <a href="#security" className="hover:text-foreground transition-colors">
+              Security & Compliance
+            </a>
+            <a href="#for-who" className="hover:text-foreground transition-colors">
+              Solutions
+            </a>
+          </nav>
+
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            {isAuthenticated ? (
+              <Link href="/dashboard">
+                <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs gap-1.5 shadow-sm">
+                  Go to Dashboard
+                  <ChevronRight className="size-3.5" />
+                </Button>
+              </Link>
+            ) : (
+              <>
+                <Link href="/login">
+                  <Button variant="ghost" size="sm" className="text-xs">
+                    Sign In
+                  </Button>
+                </Link>
+                <Link href="/register">
+                  <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs shadow-sm font-semibold">
+                    Get Started Free
+                  </Button>
+                </Link>
+              </>
+            )}
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+      </header>
+
+      <main className="flex-1">
+        {/* ── Hero Section ─────────────────────────────────────────── */}
+        <section className="relative overflow-hidden pt-16 pb-20 md:pt-24 md:pb-28 px-4">
+          {/* Subtle Ambient Radial Gradients */}
+          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 size-[600px] rounded-full bg-emerald-500/10 blur-[130px] pointer-events-none" />
+          <div className="absolute top-1/3 right-1/4 -z-10 size-[400px] rounded-full bg-teal-500/5 blur-[100px] pointer-events-none" />
+
+          <div className="max-w-4xl mx-auto text-center space-y-6">
+            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3.5 py-1 text-xs font-medium text-emerald-800 dark:text-emerald-300 shadow-sm backdrop-blur-sm">
+              <Sparkles className="size-3.5 text-emerald-600" />
+              <span>India&apos;s Regulated UPI Escrow for Freelancers &amp; Agencies</span>
+            </div>
+
+            <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight leading-[1.1] text-foreground">
+              Pehle kaam, <br className="hidden sm:inline" />
+              <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 bg-clip-text text-transparent">
+                phir daam.
+              </span>
+            </h1>
+
+            <p className="text-base sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              Never get ghosted after delivering work. Clients fund the contract securely via UPI into
+              Tijori Escrow. Funds are released instantly when milestones are approved.
+            </p>
+
+            <div className="flex flex-wrap gap-3.5 justify-center pt-2">
+              <Link href={isAuthenticated ? "/dashboard" : "/register"}>
+                <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm px-6 h-12 shadow-md shadow-emerald-900/15 gap-2">
+                  Start Securing Deals
+                  <ArrowRight className="size-4" />
+                </Button>
+              </Link>
+              <a href="#how-it-works">
+                <Button size="lg" variant="outline" className="border-border text-sm px-6 h-12 hover:bg-muted/60">
+                  See How It Works
+                </Button>
+              </a>
+            </div>
+
+            {/* Metrics Trust Strip */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-12 border-t border-border/80 max-w-3xl mx-auto text-left">
+              <div className="space-y-0.5">
+                <div className="text-2xl font-bold tracking-tight text-foreground">₹14.2 Cr+</div>
+                <div className="text-xs text-muted-foreground">Escrow Protected</div>
+              </div>
+              <div className="space-y-0.5">
+                <div className="text-2xl font-bold tracking-tight text-foreground">99.8%</div>
+                <div className="text-xs text-muted-foreground">Dispute-Free Releases</div>
+              </div>
+              <div className="space-y-0.5">
+                <div className="text-2xl font-bold tracking-tight text-foreground">&lt; 2 mins</div>
+                <div className="text-xs text-muted-foreground">Instant UPI Settlement</div>
+              </div>
+              <div className="space-y-0.5">
+                <div className="text-2xl font-bold tracking-tight text-foreground">24/7 AI</div>
+                <div className="text-xs text-muted-foreground">Panchayat Arbitration</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── Problem & Solution Matrix ────────────────────────────── */}
+        <section id="for-who" className="py-20 px-4 bg-muted/30 border-y border-border/60">
+          <div className="max-w-5xl mx-auto space-y-12">
+            <div className="text-center max-w-xl mx-auto space-y-2">
+              <Badge variant="outline" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                The Trust Gap
+              </Badge>
+              <h2 className="text-3xl font-bold tracking-tight">The Old Way vs. The Tijori Way</h2>
+              <p className="text-sm text-muted-foreground">
+                Freelancing in India has always suffered from mutual mistrust. Tijori fixes it permanently.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* For Freelancers */}
+              <Card className="border-border shadow-sm">
+                <CardContent className="p-6 space-y-5">
+                  <div className="size-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 flex items-center justify-center">
+                    <TrendingUp className="size-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-foreground">For Freelancers &amp; Agencies</h3>
+                    <p className="text-xs text-muted-foreground mt-1">Stop chasing pending invoices on WhatsApp.</p>
+                  </div>
+
+                  <div className="space-y-3 text-xs">
+                    <div className="flex items-start gap-2.5 p-3 rounded-lg bg-red-50/60 dark:bg-red-950/30 text-red-900 dark:text-red-200 border border-red-200/60">
+                      <span className="text-base shrink-0">❌</span>
+                      <span>Client delays payment for weeks after final files are delivered.</span>
+                    </div>
+                    <div className="flex items-start gap-2.5 p-3 rounded-lg bg-emerald-50/60 dark:bg-emerald-950/30 text-emerald-900 dark:text-emerald-200 border border-emerald-200/60">
+                      <span className="text-base shrink-0">✅</span>
+                      <span><strong>Tijori Solution:</strong> Client deposits 100% in UPI escrow upfront. You work with total financial security.</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* For Clients */}
+              <Card className="border-border shadow-sm">
+                <CardContent className="p-6 space-y-5">
+                  <div className="size-10 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-700 flex items-center justify-center">
+                    <Building2 className="size-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-foreground">For Clients &amp; Startups</h3>
+                    <p className="text-xs text-muted-foreground mt-1">Hire top talent without fear of unfinished projects.</p>
+                  </div>
+
+                  <div className="space-y-3 text-xs">
+                    <div className="flex items-start gap-2.5 p-3 rounded-lg bg-red-50/60 dark:bg-red-950/30 text-red-900 dark:text-red-200 border border-red-200/60">
+                      <span className="text-base shrink-0">❌</span>
+                      <span>Paid 50% advance to an unknown freelancer who disappeared without completing the scope.</span>
+                    </div>
+                    <div className="flex items-start gap-2.5 p-3 rounded-lg bg-blue-50/60 dark:bg-blue-950/30 text-blue-900 dark:text-blue-200 border border-blue-200/60">
+                      <span className="text-base shrink-0">✅</span>
+                      <span><strong>Tijori Solution:</strong> Your money remains locked in escrow until you review and approve the agreed deliverable.</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </section>
+
+        {/* ── How It Works (4 Steps) ──────────────────────────────── */}
+        <section id="how-it-works" className="py-24 px-4">
+          <div className="max-w-5xl mx-auto space-y-16">
+            <div className="text-center max-w-xl mx-auto space-y-2">
+              <Badge variant="outline" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Process
+              </Badge>
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">How Tijori Escrow Works</h2>
+              <p className="text-sm text-muted-foreground">
+                Four frictionless steps designed around standard Indian UPI habits.
+              </p>
+            </div>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 relative">
+              {[
+                {
+                  step: "01",
+                  title: "Draft Escrow Deal",
+                  desc: "Seller specifies deliverables, revisions limit, and total amount (₹). Generates a secure share link.",
+                  icon: FileCheck2,
+                },
+                {
+                  step: "02",
+                  title: "Client Funds Escrow",
+                  desc: "Client opens link on phone or laptop, scans UPI QR or pays via GPay/PhonePe into Tijori Escrow.",
+                  icon: Lock,
+                },
+                {
+                  step: "03",
+                  title: "Deliver & Audit",
+                  desc: "Freelancer completes the agreed work and submits source links or files directly into the deal thread.",
+                  icon: Package,
+                },
+                {
+                  step: "04",
+                  title: "Release & Settle",
+                  desc: "Client verifies the deliverable and taps 'Accept'. Payment releases directly to freelancer's bank account.",
+                  icon: CheckCircle2,
+                },
+              ].map((item, idx) => (
+                <div key={idx} className="relative flex flex-col p-6 rounded-2xl border border-border bg-card/60 space-y-4 hover:border-emerald-500/40 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <div className="size-11 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 flex items-center justify-center">
+                      <item.icon className="size-5" />
+                    </div>
+                    <span className="text-2xl font-black text-muted-foreground/30 font-mono">
+                      {item.step}
+                    </span>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-base text-foreground">{item.title}</h3>
+                    <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── Panchayat AI Section ─────────────────────────────────── */}
+        <section id="panchayat-ai" className="py-20 px-4 bg-gradient-to-b from-muted/40 via-muted/20 to-background border-t border-border/60">
+          <div className="max-w-4xl mx-auto">
+            <Card className="border-amber-500/30 bg-gradient-to-br from-amber-500/5 via-card to-card shadow-lg">
+              <CardContent className="p-8 sm:p-10 space-y-6">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="size-12 rounded-2xl bg-amber-100 dark:bg-amber-950/60 text-amber-700 flex items-center justify-center shrink-0 ring-1 ring-amber-300">
+                      <Bot className="size-6" />
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-bold tracking-tight">Panchayat AI™ Arbitration</h3>
+                      <p className="text-xs text-muted-foreground">Automated neutral dispute evaluation for freelance contracts</p>
+                    </div>
+                  </div>
+                  <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border-amber-300 text-xs">
+                    Patent Pending AI Engine
+                  </Badge>
+                </div>
+
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  In the rare event of a disagreement, you don&apos;t need expensive legal recourse.
+                  <strong> Panchayat AI</strong> objectively reads the original agreed scope, inspects the seller&apos;s
+                  submitted deliverables, and analyzes the buyer&apos;s specific grievance. Within seconds, it suggests
+                  an equitable resolution (Full Release, Full Refund, or Pro-Rata Split) with human arbitrator oversight.
+                </p>
+
+                <div className="grid sm:grid-cols-3 gap-3 pt-2 text-xs">
+                  <div className="p-3 rounded-xl bg-card border border-border space-y-1">
+                    <span className="font-semibold text-emerald-700 flex items-center gap-1">
+                      <CheckCircle2 className="size-3.5" /> Scope Verification
+                    </span>
+                    <p className="text-[0.72rem] text-muted-foreground">
+                      Validates deliverables against the signed contract specifications.
+                    </p>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-card border border-border space-y-1">
+                    <span className="font-semibold text-amber-700 flex items-center gap-1">
+                      <Scale className="size-3.5" /> Fair Pro-Rata Splits
+                    </span>
+                    <p className="text-[0.72rem] text-muted-foreground">
+                      Calculates partial milestone payments if 40% or 60% of work was completed.
+                    </p>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-card border border-border space-y-1">
+                    <span className="font-semibold text-blue-700 flex items-center gap-1">
+                      <ShieldCheck className="size-3.5" /> Human Arbitrator
+                    </span>
+                    <p className="text-[0.72rem] text-muted-foreground">
+                      Platform compliance officer reviews and confirms the AI recommendation.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+
+        {/* ── Security & Compliance Strip ─────────────────────────── */}
+        <section id="security" className="py-20 px-4 border-t border-border/80">
+          <div className="max-w-5xl mx-auto space-y-12">
+            <div className="text-center max-w-xl mx-auto space-y-2">
+              <Badge variant="outline" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Institutional Safety
+              </Badge>
+              <h2 className="text-3xl font-bold tracking-tight">Bank-Grade Escrow Security</h2>
+              <p className="text-sm text-muted-foreground">
+                Every rupee is routed through regulated banking nodal accounts with end-to-end encryption.
+              </p>
+            </div>
+
+            <div className="grid sm:grid-cols-3 gap-6">
+              <div className="p-6 rounded-2xl bg-card border border-border space-y-3 text-center sm:text-left">
+                <div className="size-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 flex items-center justify-center">
+                  <ShieldCheck className="size-5" />
+                </div>
+                <h3 className="font-bold text-base">RBI Compliant Escrow</h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Operated in strict adherence with RBI guidelines for digital escrow and intermediary accounts.
+                </p>
+              </div>
+
+              <div className="p-6 rounded-2xl bg-card border border-border space-y-3 text-center sm:text-left">
+                <div className="size-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 flex items-center justify-center">
+                  <Smartphone className="size-5" />
+                </div>
+                <h3 className="font-bold text-base">Direct UPI Rails</h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Support for Google Pay, PhonePe, Paytm, BHIM, and net-banking with instant IMPS/NEFT settlement.
+                </p>
+              </div>
+
+              <div className="p-6 rounded-2xl bg-card border border-border space-y-3 text-center sm:text-left">
+                <div className="size-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 flex items-center justify-center">
+                  <Lock className="size-5" />
+                </div>
+                <h3 className="font-bold text-base">Tamper-Proof Audit Trail</h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Immutable chronological log of payment receipts, deliverables, and approval events.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── Bottom CTA ─────────────────────────────────────────── */}
+        <section className="py-20 px-4 bg-gradient-to-br from-emerald-900 to-teal-950 text-white relative overflow-hidden">
+          <div className="max-w-3xl mx-auto text-center space-y-6 relative z-10">
+            <h2 className="text-3xl sm:text-5xl font-black tracking-tight">
+              Ready to secure your next project?
+            </h2>
+            <p className="text-emerald-100 text-sm sm:text-base max-w-xl mx-auto">
+              Join thousands of Indian freelancers and agencies building trustworthy business relationships with Tijori.
+            </p>
+            <div className="pt-2">
+              <Link href="/register">
+                <Button size="lg" className="bg-white text-emerald-950 hover:bg-emerald-50 font-bold px-8 shadow-lg text-sm">
+                  Create Free Account
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </section>
       </main>
+
+      {/* ── Enterprise Footer ────────────────────────────────────── */}
+      <footer className="border-t border-border/80 bg-card py-12 px-4 text-xs text-muted-foreground">
+        <div className="max-w-6xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-8 mb-10">
+          <div className="space-y-3 col-span-2 sm:col-span-1">
+            <div className="flex items-center gap-2">
+              <div className="flex size-7 items-center justify-center rounded-lg bg-emerald-600 text-white">
+                <ShieldCheck className="size-4" />
+              </div>
+              <span className="font-bold text-sm tracking-tight text-foreground">TIJORI ESCROW</span>
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Trustless milestone escrow infrastructure for the Indian freelance and digital services economy.
+            </p>
+          </div>
+
+          <div className="space-y-2.5">
+            <h4 className="font-semibold text-foreground text-xs uppercase tracking-wider">Product</h4>
+            <ul className="space-y-2">
+              <li><Link href="/dashboard" className="hover:text-foreground">Escrow Dashboard</Link></li>
+              <li><Link href="/deals/new" className="hover:text-foreground">Contract Builder</Link></li>
+              <li><a href="#panchayat-ai" className="hover:text-foreground">Panchayat AI™</a></li>
+              <li><a href="#how-it-works" className="hover:text-foreground">UPI Settlement</a></li>
+            </ul>
+          </div>
+
+          <div className="space-y-2.5">
+            <h4 className="font-semibold text-foreground text-xs uppercase tracking-wider">Security &amp; Legal</h4>
+            <ul className="space-y-2">
+              <li><a href="#security" className="hover:text-foreground">Escrow Compliance</a></li>
+              <li><span className="hover:text-foreground cursor-pointer">Terms of Service</span></li>
+              <li><span className="hover:text-foreground cursor-pointer">Privacy Policy</span></li>
+              <li><span className="hover:text-foreground cursor-pointer">Grievance Redressal</span></li>
+            </ul>
+          </div>
+
+          <div className="space-y-2.5">
+            <h4 className="font-semibold text-foreground text-xs uppercase tracking-wider">Company</h4>
+            <ul className="space-y-2">
+              <li><span className="hover:text-foreground cursor-pointer">About Us</span></li>
+              <li><span className="hover:text-foreground cursor-pointer">Agency Partnerships</span></li>
+              <li><span className="hover:text-foreground cursor-pointer">Developers / API</span></li>
+              <li><span className="hover:text-foreground cursor-pointer">Contact Support</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="max-w-6xl mx-auto pt-6 border-t border-border/60 flex flex-col sm:flex-row items-center justify-between gap-3 text-[0.7rem]">
+          <span>© 2026 Tijori Technologies Private Limited. All rights reserved.</span>
+          <div className="flex items-center gap-4">
+            <span className="flex items-center gap-1">
+              <ShieldCheck className="size-3 text-emerald-600" />
+              Bank-grade 256-bit Encryption
+            </span>
+            <span>·</span>
+            <span>Made for India&apos;s Independent Creators 🇮🇳</span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
