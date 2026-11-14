@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -25,10 +26,148 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/lib/auth-context";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Lenis from "lenis";
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function LandingPage() {
   const router = useRouter();
   const { isAuthenticated, user } = useAuth();
+  const sectionRefs = useRef<(HTMLElement | null)[]>([]);
+
+  // Lenis smooth scroll + GSAP ScrollTrigger integration
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+    });
+
+    lenis.on("scroll", ScrollTrigger.update);
+    gsap.ticker.add((time) => {
+      lenis.raf(time * 1000);
+    });
+    gsap.ticker.lagSmoothing(0);
+
+    // Hero entrance animations
+    const heroTl = gsap.timeline({ defaults: { ease: "power3.out", duration: 0.9 } });
+    heroTl
+      .fromTo(
+        ".hero-badge",
+        { opacity: 0, y: 30, scale: 0.95 },
+        { opacity: 1, y: 0, scale: 1 }
+      )
+      .fromTo(
+        ".hero-title",
+        { opacity: 0, y: 40 },
+        { opacity: 1, y: 0 },
+        "-=0.4"
+      )
+      .fromTo(
+        ".hero-subtitle",
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0 },
+        "-=0.5"
+      )
+      .fromTo(
+        ".hero-cta",
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, stagger: 0.1 },
+        "-=0.4"
+      )
+      .fromTo(
+        ".hero-metric",
+        { opacity: 0, y: 20, scale: 0.9 },
+        { opacity: 1, y: 0, scale: 1, stagger: 0.08 },
+        "-=0.3"
+      );
+
+    // Scroll-triggered section animations
+    const sections = sectionRefs.current.filter(Boolean) as HTMLElement[];
+    sections.forEach((section, i) => {
+      gsap.fromTo(
+        section,
+        { opacity: 0, y: 60 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: section,
+            start: "top 80%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      );
+
+      // Staggered children animation
+      const cards = section.querySelectorAll(".animate-stagger > *");
+      if (cards.length) {
+        gsap.fromTo(
+          cards,
+          { opacity: 0, y: 40 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            stagger: 0.12,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: section,
+              start: "top 80%",
+              toggleActions: "play none none reverse",
+            },
+          }
+        );
+      }
+    });
+
+    // Floating gradient orbs animation
+    gsap.to(".orb-1", {
+      x: "+=40",
+      y: "+=30",
+      rotation: 360,
+      duration: 20,
+      repeat: -1,
+      yoyo: true,
+      ease: "none",
+    });
+    gsap.to(".orb-2", {
+      x: "-=30",
+      y: "-=20",
+      rotation: -360,
+      duration: 25,
+      repeat: -1,
+      yoyo: true,
+      ease: "none",
+    });
+
+    // Text scramble effect for hero title (subtle)
+    const titleSpans = document.querySelectorAll(".hero-title .scramble");
+    titleSpans.forEach((span, i) => {
+      gsap.fromTo(
+        span,
+        { opacity: 0, filter: "blur(8px)", scale: 0.8 },
+        {
+          opacity: 1,
+          filter: "blur(0px)",
+          scale: 1,
+          duration: 0.6,
+          delay: i * 0.03,
+          ease: "power2.out",
+        }
+      );
+    });
+
+    return () => {
+      lenis.destroy();
+      ScrollTrigger.getAll().forEach((t) => t.kill());
+      gsap.ticker.remove(() => lenis.raf(0));
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col selection:bg-emerald-500/20 selection:text-emerald-800">
@@ -96,38 +235,38 @@ export default function LandingPage() {
 
       <main className="flex-1">
         {/* ── Hero Section ─────────────────────────────────────────── */}
-        <section className="relative overflow-hidden pt-16 pb-20 md:pt-24 md:pb-28 px-4">
-          {/* Subtle Ambient Radial Gradients */}
-          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 size-[600px] rounded-full bg-emerald-500/10 blur-[130px] pointer-events-none" />
-          <div className="absolute top-1/3 right-1/4 -z-10 size-[400px] rounded-full bg-teal-500/5 blur-[100px] pointer-events-none" />
+        <section className="relative overflow-hidden pt-16 pb-20 md:pt-24 md:pb-28 px-4" ref={(el) => { if (el) sectionRefs.current[0] = el; }}>
+          {/* Subtle Ambient Radial Gradients - animated orbs */}
+          <div className="orb-1 absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 size-[600px] rounded-full bg-emerald-500/10 blur-[130px] pointer-events-none" />
+          <div className="orb-2 absolute top-1/3 right-1/4 -z-10 size-[400px] rounded-full bg-teal-500/5 blur-[100px] pointer-events-none" />
 
           <div className="max-w-4xl mx-auto text-center space-y-6">
-            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3.5 py-1 text-xs font-medium text-emerald-800 dark:text-emerald-300 shadow-sm backdrop-blur-sm">
+            <div className="hero-badge inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3.5 py-1 text-xs font-medium text-emerald-800 dark:text-emerald-300 shadow-sm backdrop-blur-sm">
               <Sparkles className="size-3.5 text-emerald-600" />
               <span>India&apos;s Regulated UPI Escrow for Freelancers &amp; Agencies</span>
             </div>
 
-            <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight leading-[1.1] text-foreground">
-              Pehle kaam, <br className="hidden sm:inline" />
-              <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 bg-clip-text text-transparent">
+            <h1 className="hero-title text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight leading-[1.1] text-foreground">
+              <span className="scramble">Pehle kaam,</span> <br className="hidden sm:inline" />
+              <span className="scramble bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500 bg-clip-text text-transparent">
                 phir daam.
               </span>
             </h1>
 
-            <p className="text-base sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            <p className="hero-subtitle text-base sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
               Never get ghosted after delivering work. Clients fund the contract securely via UPI into
               Tijori Escrow. Funds are released instantly when milestones are approved.
             </p>
 
             <div className="flex flex-wrap gap-3.5 justify-center pt-2">
               <Link href={isAuthenticated ? "/dashboard" : "/register"}>
-                <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm px-6 h-12 shadow-md shadow-emerald-900/15 gap-2">
+                <Button size="lg" className="hero-cta bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm px-6 h-12 shadow-md shadow-emerald-900/15 gap-2">
                   Start Securing Deals
                   <ArrowRight className="size-4" />
                 </Button>
               </Link>
               <a href="#how-it-works">
-                <Button size="lg" variant="outline" className="border-border text-sm px-6 h-12 hover:bg-muted/60">
+                <Button size="lg" variant="outline" className="hero-cta border-border text-sm px-6 h-12 hover:bg-muted/60">
                   See How It Works
                 </Button>
               </a>
@@ -135,19 +274,19 @@ export default function LandingPage() {
 
             {/* Metrics Trust Strip */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-12 border-t border-border/80 max-w-3xl mx-auto text-left">
-              <div className="space-y-0.5">
+              <div className="hero-metric space-y-0.5">
                 <div className="text-2xl font-bold tracking-tight text-foreground">₹14.2 Cr+</div>
                 <div className="text-xs text-muted-foreground">Escrow Protected</div>
               </div>
-              <div className="space-y-0.5">
+              <div className="hero-metric space-y-0.5">
                 <div className="text-2xl font-bold tracking-tight text-foreground">99.8%</div>
                 <div className="text-xs text-muted-foreground">Dispute-Free Releases</div>
               </div>
-              <div className="space-y-0.5">
+              <div className="hero-metric space-y-0.5">
                 <div className="text-2xl font-bold tracking-tight text-foreground">&lt; 2 mins</div>
                 <div className="text-xs text-muted-foreground">Instant UPI Settlement</div>
               </div>
-              <div className="space-y-0.5">
+              <div className="hero-metric space-y-0.5">
                 <div className="text-2xl font-bold tracking-tight text-foreground">24/7 AI</div>
                 <div className="text-xs text-muted-foreground">Panchayat Arbitration</div>
               </div>
@@ -156,7 +295,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── Problem & Solution Matrix ────────────────────────────── */}
-        <section id="for-who" className="py-20 px-4 bg-muted/30 border-y border-border/60">
+        <section id="for-who" className="py-20 px-4 bg-muted/30 border-y border-border/60" ref={(el) => { if (el) sectionRefs.current[1] = el; }}>
           <div className="max-w-5xl mx-auto space-y-12">
             <div className="text-center max-w-xl mx-auto space-y-2">
               <Badge variant="outline" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -168,7 +307,7 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-2 gap-6 animate-stagger">
               {/* For Freelancers */}
               <Card className="border-border shadow-sm">
                 <CardContent className="p-6 space-y-5">
@@ -221,7 +360,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── How It Works (4 Steps) ──────────────────────────────── */}
-        <section id="how-it-works" className="py-24 px-4">
+        <section id="how-it-works" className="py-24 px-4" ref={(el) => { if (el) sectionRefs.current[2] = el; }}>
           <div className="max-w-5xl mx-auto space-y-16">
             <div className="text-center max-w-xl mx-auto space-y-2">
               <Badge variant="outline" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -233,7 +372,7 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 relative">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 relative animate-stagger">
               {[
                 {
                   step: "01",
@@ -280,7 +419,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── Panchayat AI Section ─────────────────────────────────── */}
-        <section id="panchayat-ai" className="py-20 px-4 bg-gradient-to-b from-muted/40 via-muted/20 to-background border-t border-border/60">
+        <section id="panchayat-ai" className="py-20 px-4 bg-gradient-to-b from-muted/40 via-muted/20 to-background border-t border-border/60" ref={(el) => { if (el) sectionRefs.current[3] = el; }}>
           <div className="max-w-4xl mx-auto">
             <Card className="border-amber-500/30 bg-gradient-to-br from-amber-500/5 via-card to-card shadow-lg">
               <CardContent className="p-8 sm:p-10 space-y-6">
@@ -306,7 +445,7 @@ export default function LandingPage() {
                   an equitable resolution (Full Release, Full Refund, or Pro-Rata Split) with human arbitrator oversight.
                 </p>
 
-                <div className="grid sm:grid-cols-3 gap-3 pt-2 text-xs">
+                <div className="grid sm:grid-cols-3 gap-3 pt-2 text-xs animate-stagger">
                   <div className="p-3 rounded-xl bg-card border border-border space-y-1">
                     <span className="font-semibold text-emerald-700 flex items-center gap-1">
                       <CheckCircle2 className="size-3.5" /> Scope Verification
@@ -340,7 +479,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── Security & Compliance Strip ─────────────────────────── */}
-        <section id="security" className="py-20 px-4 border-t border-border/80">
+        <section id="security" className="py-20 px-4 border-t border-border/80" ref={(el) => { if (el) sectionRefs.current[4] = el; }}>
           <div className="max-w-5xl mx-auto space-y-12">
             <div className="text-center max-w-xl mx-auto space-y-2">
               <Badge variant="outline" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -352,7 +491,7 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="grid sm:grid-cols-3 gap-6">
+            <div className="grid sm:grid-cols-3 gap-6 animate-stagger">
               <div className="p-6 rounded-2xl bg-card border border-border space-y-3 text-center sm:text-left">
                 <div className="size-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 flex items-center justify-center">
                   <ShieldCheck className="size-5" />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Navbar } from "@/components/navbar";
@@ -23,6 +23,11 @@ import {
 import { useAuth } from "@/lib/auth-context";
 import { cn } from "@/lib/utils";
 import type { Role } from "@/lib/types";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Lenis from "lenis";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const roleConfig: Record<Role, {
   label: string;
@@ -85,6 +90,7 @@ export default function RoleSelectionPage() {
   const { loginAsPreset } = useAuth();
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
   const [isEntering, setIsEntering] = useState(false);
+  const cardRefs = useRef<(HTMLElement | null)[]>([]);
 
   const handleRoleSelect = async (role: Role) => {
     setSelectedRole(role);
@@ -99,6 +105,69 @@ export default function RoleSelectionPage() {
       setSelectedRole(null);
     }
   };
+
+  // Lenis + GSAP animations
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+    });
+    lenis.on("scroll", ScrollTrigger.update);
+    gsap.ticker.add((time) => lenis.raf(time * 1000));
+    gsap.ticker.lagSmoothing(0);
+
+    // Hero entrance animation
+    const heroTl = gsap.timeline({ defaults: { ease: "power3.out", duration: 0.9 } });
+    heroTl
+      .fromTo(".enter-badge", { opacity: 0, y: 30, scale: 0.95 }, { opacity: 1, y: 0, scale: 1 })
+      .fromTo(".enter-title", { opacity: 0, y: 40 }, { opacity: 1, y: 0 }, "-=0.4")
+      .fromTo(".enter-subtitle", { opacity: 0, y: 30 }, { opacity: 1, y: 0 }, "-=0.5")
+      .fromTo(".enter-cards", { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 1 }, "-=0.3");
+
+    // Staggered card animations
+    gsap.fromTo(
+      ".role-card",
+      { opacity: 0, y: 50, scale: 0.95 },
+      {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 0.8,
+        stagger: 0.15,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: ".enter-cards",
+          start: "top 85%",
+          toggleActions: "play none none reverse",
+        },
+      }
+    );
+
+    // Feature list stagger
+    gsap.fromTo(
+      ".feature-item",
+      { opacity: 0, x: -20 },
+      {
+        opacity: 1,
+        x: 0,
+        duration: 0.5,
+        stagger: 0.06,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: ".enter-cards",
+          start: "top 80%",
+          toggleActions: "play none none reverse",
+        },
+      }
+    );
+
+    return () => {
+      lenis.destroy();
+      ScrollTrigger.getAll().forEach((t) => t.kill());
+      gsap.ticker.remove(() => lenis.raf(0));
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
@@ -137,12 +206,12 @@ export default function RoleSelectionPage() {
         <div className="w-full max-w-5xl space-y-10">
           {/* Hero Section */}
           <div className="text-center space-y-6">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3.5 py-1 text-xs font-medium text-primary shadow-sm backdrop-blur-sm">
+            <div className="enter-badge inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3.5 py-1 text-xs font-medium text-primary shadow-sm backdrop-blur-sm">
               <Sparkles className="size-3.5" />
               <span>Choose Your Workspace</span>
             </div>
 
-            <h1 className="font-heading text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-[1.1] text-foreground">
+            <h1 className="enter-title font-heading text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-[1.1] text-foreground">
               HOW DO YOU WANT TO
               <br className="hidden sm:inline" />
               <span className="bg-gradient-to-r from-emerald-600 via-primary to-amber-600 bg-clip-text text-transparent">
@@ -150,7 +219,7 @@ export default function RoleSelectionPage() {
               </span>
             </h1>
 
-            <p className="text-base sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            <p className="enter-subtitle text-base sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
               Select your role to access the appropriate dashboard. This is a demo mode — you can switch roles anytime from the navbar.
             </p>
 
@@ -170,7 +239,7 @@ export default function RoleSelectionPage() {
           </div>
 
           {/* Role Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="enter-cards grid grid-cols-1 md:grid-cols-3 gap-6">
             {(["SELLER", "BUYER", "ADMIN"] as Role[]).map((role) => {
               const config = roleConfig[role];
               const Icon = config.icon;
@@ -180,7 +249,7 @@ export default function RoleSelectionPage() {
                 <Card
                   key={role}
                   className={cn(
-                    "relative overflow-hidden transition-all duration-300 group cursor-pointer",
+                    "role-card relative overflow-hidden transition-all duration-300 group cursor-pointer",
                     isSelected
                       ? "ring-2 ring-primary scale-[1.01] shadow-xl shadow-primary/10"
                       : "border-border/80 hover:border-primary/40 hover:shadow-lg hover:-translate-y-1"
@@ -225,7 +294,7 @@ export default function RoleSelectionPage() {
                     {/* Features */}
                     <ul className="space-y-2.5 mb-8">
                       {config.features.map((feature, idx) => (
-                        <li key={idx} className="flex items-start gap-2.5 text-xs text-muted-foreground">
+                        <li key={idx} className="feature-item flex items-start gap-2.5 text-xs text-muted-foreground">
                           <CheckCircle2 className={cn("size-3.5 shrink-0 mt-0.5", config.iconColor)} />
                           <span>{feature}</span>
                         </li>
